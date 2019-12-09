@@ -3,6 +3,7 @@ var router = express.Router();
 var multer  = require('multer')
 var upload = multer({ dest: 'uploads/' });
 var Reader = require('../libs/reader');
+var Database = require('../libs/database');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -10,7 +11,8 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/pca', (req, res, next) => {
-  console.log(req);
+  var database = new Database();
+  database.connectionTest();
   res.render('pca', {title: 'PCA Pharmer', csrfToken: req.csrfToken()});
 });
 
