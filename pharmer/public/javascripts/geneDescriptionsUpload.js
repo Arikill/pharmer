@@ -14,7 +14,7 @@ var sendFiles = () => {
     formData.append("files", fileData);
     $.ajax({
         type: "POST",
-        url: document.location.protocol + "//" + document.location.hostname + ":" + document.location.port + "/transcriptome/newdata",
+        url: document.location.protocol + "//" + document.location.hostname + ":" + document.location.port + "/transcriptome/database/upload/geneDescriptions",
         data: formData,
         cache: false,
         processData: false,

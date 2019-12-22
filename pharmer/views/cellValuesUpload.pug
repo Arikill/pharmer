@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    link(rel='stylesheet', href='/stylesheets/cellValuesUpload.css')
+    h1= title
+    div(class="card")
+        div(class="card-content")
+            div(class="card-title") Files
+            div(class="card-body")
+                form(encrypt="multipart/form-data" id="file-upload-form")
+                    input(type="hidden" id="csrfToken" name="_csrf" value= csrfToken)
+                    div(class="file-field input-field")
+                        div(class="btn")
+                            span File
+                            input(type="file" name="cellValues" id="files")
+                        div(class="file-path-wrapper")
+                            input(class="file-path validate" type="text" placeholder="Upload cell values file")
+    
+    script(type="text/javascript", src='/javascripts/cellValuesUpload.js')

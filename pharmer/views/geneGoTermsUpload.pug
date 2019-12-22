@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    link(rel='stylesheet', href='/stylesheets/transcriptome.css')
+    link(rel='stylesheet', href='/stylesheets/geneGoTermsUpload.css')
     h1= title
     div(class="card")
         div(class="card-content")
@@ -12,9 +12,8 @@ block content
                     div(class="file-field input-field")
                         div(class="btn")
                             span File
-                            input(type="file" name="transcriptome" id="files" multiple)
+                            input(type="file" name="geneGoTerms" id="files")
                         div(class="file-path-wrapper")
-                            input(class="file-path validate" type="text" placeholder="upload one or more files")
+                            input(class="file-path validate" type="text" placeholder="Upload gene goterms file")
     
-    script(type="text/javascript", src='/javascripts/transcriptome.js')
-    script(type="text/javascript", src='/javascripts/papaparse.min.js')
+    script(type="text/javascript", src='/javascripts/geneGoTermsUpload.js')
