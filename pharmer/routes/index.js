@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var multer  = require('multer')
 var upload = multer({ dest: 'uploads/' });
-var client = require('../db/database');
+var Database = require('../db/database');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -10,14 +10,14 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/transcriptome/database/upload/geneDescriptions', (req, res, next) => {
-  var database = new client();
+  var database = new Database();
   database.connect();
   res.render('geneDescriptionsUpload', {title: 'New Gene Descriptions data', csrfToken: req.csrfToken()});
 });
 
 router.post('/transcriptome/database/upload/geneDescriptions', upload.array('geneDescriptions', 1), (req, res, next) => {
-  var database = new Database('pharming');
-  database.createCollection('transcriptome');
+  var database = new Database();
+  database.createCollection('genes');
   var file = req.files[0];
   // database.insertGenes('transcriptome', file);
   res.json({'status': 'received'});
