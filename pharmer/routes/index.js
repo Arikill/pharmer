@@ -17,9 +17,9 @@ router.get('/transcriptome/database/upload/geneDescriptions', (req, res, next) =
 
 router.post('/transcriptome/database/upload/geneDescriptions', upload.array('geneDescriptions', 1), (req, res, next) => {
   var database = new Database();
-  database.createCollection('genes');
-  var file = req.files[0];
-  // database.insertGenes('transcriptome', file);
+  // database.createCollection('genes');
+  var file = req.files[0]["path"];
+  database.insertGenes('genes', file);
   res.json({'status': 'received'});
 });
 
