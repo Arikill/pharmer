@@ -17,7 +17,6 @@ router.get('/transcriptome/database/upload/geneDescriptions', (req, res, next) =
 
 router.post('/transcriptome/database/upload/geneDescriptions', upload.array('geneDescriptions', 1), (req, res, next) => {
   var database = new Database();
-  // database.createCollection('genes');
   var file = req.files[0]["path"];
   database.insertGenes('genes', file);
   res.json({'status': 'received'});
@@ -28,15 +27,10 @@ router.get('/transcriptome/database/upload/cellValues', upload.array('cellValues
 })
 
 router.post('/transcriptome/database/upload/cellValues', upload.array('cellValues', 1), (req, res, next) => {
-  var updateCellValuesPromise = new Promise((resolve, reject) => {
-    var database = new Database();
-    var file = req.files[0];
-    resolve(database.updateCellValues(file["path"]));
-  });
-  updateCellValuesPromise.then(
-    result => res.json({"status": "done"}),
-    error => {console.log(error); res.json({"status": "failed"})}
-  );
+  var database = new Database();
+  var file = req.files[0]['path'];
+  database.updateCellValues('genes', file);
+  res.json({'status': 'received'});
 });
 
 router.get('/transcriptome/database/upload/geneGoTerms', upload.array('geneGoTerms', 1), (req, res, next) => {

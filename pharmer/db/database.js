@@ -53,11 +53,30 @@ database.prototype.insertGenes = function(collectionName, geneDescriptionFile) {
     });
 }
 
-database.prototype.insertCellValues = function(collectionName, cellValuesFile) {
+database.prototype.updateCellValues = function(collectionName, cellValuesFile) {
     this.client.connect(function(err, client) {
         assert.equal(err, null);
-        console.log("Connected successfully, ready to insert cell values");
+        console.log("Connected successfully, ready to update cell values");
         const db = client.db(this.dbName);
+        fs.createReadStream(cellValuesFile).pipe(csv())
+            .on('data', function(row) {
+                var id = row['Gene.stable.ID'];
+                delete row['Gene.stable.ID']
+                db.collection(collectionName).findOneAndUpdate({'_id': id}, {$set: row}, {
+                    returnOriginal: true
+                }, function(err, result) {
+                    assert.equal(err, null);
+                });
+            }).on('end', function() {
+                client.close();
+            });
+    });
+}
+
+database.prototype.updateGoTerms = function(collectionName, goTermsFile) {
+    this.client.connect(function(err, client) {
+        assert.equal(err, null);
+        console.log("Connected successfully, ready to update goTerms");
         
     });
 }
