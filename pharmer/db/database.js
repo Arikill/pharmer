@@ -77,7 +77,17 @@ database.prototype.updateGoTerms = function(collectionName, goTermsFile) {
     this.client.connect(function(err, client) {
         assert.equal(err, null);
         console.log("Connected successfully, ready to update goTerms");
-        
+        const db = client.db(this.dbName);
+        fs.createReadStream(goTermsFile).pipe(csv())
+            .on('data', function(row) {
+                db.collection(collectionName).findOneAndUpdate({'_id': row['Gene.stable.ID']}, {$push: {'goTerms': String(row['GO.term.name'])}}, {
+                    returnOriginal: true
+                }, function(err, result) {
+                    assert.equal(err, null);
+                });
+            }).on('end', function() {
+                client.close();
+            });
     });
 }
 
