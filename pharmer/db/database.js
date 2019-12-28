@@ -4,7 +4,7 @@ const fs = require('fs');
 const csv = require('csv-parser');
 
 var database = function (database_name) {
-    this.url = 'mongodb://localhost:27017';
+    this.url = 'mongodb://localhost:27017/' + database_name;
     this.dbName = database_name;
     this.client = new MongoClient(this.url, { useUnifiedTopology: true });
 }
@@ -17,131 +17,144 @@ database.prototype.connect = function () {
     });
 }
 
-database.prototype.createCollection = function (collectionName) {
-    this.client.connect(function (err, client) {
-        assert.equal(err, null);
-        console.log("Connected successfully to server");
-        const db = client.db(this.dbName);
-        db.createCollection(collectionName, {}, function (err, results) {
-            console.log("Collection created!", collectionName);
-            client.close();
+database.prototype.getCollectionsList = function() {
+    var promise = new Promise((resolve, reject) => {
+        this.client.connect((err, client) => {
+            if (err) reject(err);
+            const db = client.db(this.dbName);
+            db.listCollections().toArray((err, result) => {
+                client.close();
+                if (err) reject(err);
+                resolve(result);
+            });
         });
     });
+    return promise;
 }
 
-database.prototype.createNewCollection = function (collectionName, descriptions, cell_values, go_terms) {
-    this.client.connect(function (err, client) {
-        assert.equal(err, null);
-        console.log("Connected successfully!");
-        const db = client.db(this.dbName);
-        var gene_descriptions = [];
-        var gene_cell_values = [];
-        var gene_go_terms = [];
-        fs.createReadStream(descriptions).pipe(csv())
-            .on('data', function (row) {
-                var gene = {}
-                gene['_id'] = row['Gene.stable.ID'];
-                gene['transcript_id'] = row['Transcript.stable.ID'];
-                gene['name'] = row['Gene.name'];
-                gene['description'] = row['description'];
-                gene_descriptions.push(gene);
-            }).on('end', function () {
-                db.collection(collectionName).insertMany(gene, function (err, result) {
-                    assert.equal(err, null);
-                });
-                console.log("Uploaded gene descriptions");
-                fs.createReadStream(cell_values).pipe(csv())
-                    .on('data', function (row) {
-                        var id = row['Gene.stable.ID'];
-                        delete row['Gene.stable.ID'];
-                        db.collection(collectionName).findOneAndUpdate({ '_id': id }, { $set: row }, {
-                            returnOriginal: true
-                        }, function (err, result) {
-                            assert.equal(err, null);
-                        });
-                    }).on('end', function () {
-                        console.log("Uploaded cell values");
-                        fs.createReadStream(go_terms).pipe(csv())
-                            .on('data', function (row) {
-                                if (row['GO.term.name'] !== "") {
-                                    db.collection(collectionName).findOneAndUpdate({ '_id': row['Gene.stable.ID'] }, { $push: { 'goTerms': row['GO.term.name'] } }, {
-                                        returnOriginal: true
-                                    }, function (err, result) {
-                                        assert.equal(err, null);
-                                    });
-                                }
-                            }).on('end', function () {
-                                console.log("Uploaded go terms");
-                                client.close();
-                            });
-                    });
-            });
-    })
-}
-
-database.prototype.insertGenes = function (collectionName, geneDescriptionFile) {
-    this.client.connect(function (err, client) {
-        assert.equal(err, null);
-        console.log("Connected successfully, ready to insert");
-        const db = client.db(this.dbName);
-        var data = [];
-        fs.createReadStream(geneDescriptionFile).pipe(csv())
-            .on('data', function (row) {
-                var gene = {};
-                gene['_id'] = row['Gene.stable.ID'];
-                gene['transcript_id'] = row['Transcript.stable.ID'];
-                gene['name'] = row['Gene.name'];
-                gene['description'] = row['description'];
-                data.push(gene);
-            }).on('end', function () {
-                db.collection(collectionName).insertMany(data, function (err, result) {
-                    assert.equal(err, null);
-                    console.log('Inserted genes: ', result.insertedCount);
-                    client.close();
-                });
-            });
-    });
-}
-
-database.prototype.updateCellValues = function (collectionName, cellValuesFile) {
-    this.client.connect(function (err, client) {
-        assert.equal(err, null);
-        console.log("Connected successfully, ready to update cell values");
-        const db = client.db(this.dbName);
-        fs.createReadStream(cellValuesFile).pipe(csv())
-            .on('data', function (row) {
-                var id = row['Gene.stable.ID'];
-                delete row['Gene.stable.ID']
-                db.collection(collectionName).findOneAndUpdate({ '_id': id }, { $set: row }, {
-                    returnOriginal: true
-                }, function (err, result) {
-                    assert.equal(err, null);
-                });
-            }).on('end', function () {
-                console.log('Updated Go Terms!');
+database.prototype.getCollectionFields = function(collection_name) {
+    var promise = new Promise((resolve, reject) => {
+        this.client.connect((err, client) => {
+            if (err) reject(err);
+            const db = client.db(this.dbName);
+            const collection = db.collection(collection_name);
+            collection.findOne({}, (err, result) => {
                 client.close();
+                if (err) reject(err);
+                resolve(result);
             });
+        });
     });
+    return promise;
 }
 
-database.prototype.updateGoTerms = function (collectionName, goTermsFile) {
-    this.client.connect(function (err, client) {
-        assert.equal(err, null);
-        console.log("Connected successfully, ready to update goTerms");
+database.prototype.getList = function (collection_name) {
+    var promise = new Promise((resolve, reject) => {
+        this.client.connect((err, client) => {
+            assert.equal(err, null);
+            console.log("connected");
+            const db = client.db(this.dbName);
+            const collection = db.collection(collection_name);
+            collection.find({}).toArray((err, result) => {
+                client.close();
+                if (err) reject(err);
+                resolve(err);
+            });
+        });
+    });
+    return promise;
+}
+
+database.prototype.insertGenes = function (collection_name, file) {
+    var promise = new Promise((resolve, reject) => {
+        this.client.connect((err, client) => {
+            assert.equal(err, null);
+            console.log("Connected");
+            const db = client.db(this.dbName);
+            const collection = db.collection(collection_name);
+            var data = new Array(0);
+            fs.createReadStream(file).pipe(csv())
+                .on('data', (row) => {
+                    var gene = {};
+                    gene['_id'] = row['Gene.stable.ID'];
+                    gene['transcript_id'] = row['Transcript.stable.ID'];
+                    gene['name'] = row['Gene.name'];
+                    gene['description'] = row['description'];
+                    data.push(gene);
+                }).on('end', () => {
+                    console.log('Inserting gene descriptions');
+                    collection.insertMany(data, (err, result) => {
+                        assert.equal(err, null);
+                        resolve(client);
+                    });
+                }).on('error', (error) => {
+                    console.log(error);
+                    reject(client.close());
+                });
+        });
+    });
+    return promise;
+}
+
+database.prototype.updateCellValues = function (client, collection_name, file) {
+    var promise = new Promise((resolve, reject) => {
         const db = client.db(this.dbName);
-        fs.createReadStream(goTermsFile).pipe(csv())
+        const collection = db.collection(collection_name);
+        fs.createReadStream(file).pipe(csv())
+            .on('data', (row) => {
+                var id = row['Gene.stable.ID'];
+                delete row['Gene.stable.ID'];
+                console.log('Updating cell values: ', id);
+                collection.findOneAndUpdate({ '_id': id }, { $set: row }, {
+                    returnOriginal: true
+                }, (err, result) => {
+                    assert.equal(err, null);
+                });
+            }).on('end', () => {
+                resolve(client);
+            }).on('error', (error) => {
+                console.error(error);
+                reject(client.close());
+            });
+    });
+    return promise;
+}
+
+database.prototype.updateGoTerms = function (client, collection_name, file) {
+    var promise = new Promise((resolve, reject) => {
+        const db = client.db(this.dbName);
+        const collection = db.collection(collection_name);
+        fs.createReadStream(file).pipe(csv())
             .on('data', function (row) {
                 if (row['GO.term.name'] !== "") {
-                    db.collection(collectionName).findOneAndUpdate({ '_id': row['Gene.stable.ID'] }, { $push: { 'goTerms': row['GO.term.name'] } }, {
+                    console.log('Updating go terms for:', row['Gene.stable.ID']);
+                    collection.findOneAndUpdate({ '_id': row['Gene.stable.ID'] }, { $push: { 'goTerms': row['GO.term.name'] } }, {
                         returnOriginal: true
-                    }, function (err, result) {
+                    }, (err, result) => {
                         assert.equal(err, null);
                     });
                 }
             }).on('end', function () {
-                client.close();
+                resolve(client);
+            }).on('error', (error) => {
+                console.error(error);
+                reject(client.close());
             });
     });
+    return promise;
+}
+
+database.prototype.createCollection = function (collection_name, descriptions_file, cell_values_file, go_terms_file) {
+    var promise = new Promise((resolve, reject) => {
+        this.insertGenes(collection_name, descriptions_file).then((result) => {
+            this.updateCellValues(result, collection_name, cell_values_file).then((result) => {
+                this.updateGoTerms(result, collection_name, go_terms_file).then((result) => {
+                    resolve(result.close());
+                }).catch(()=>{console.log("Could not update go terms. Client closed!");})
+            }).catch(()=>{console.log("Could not update cell values. Client closed.");})
+        }).catch(()=>{console.log("Could not insert genes. Client closed!")})
+    });
+    return promise;
 }
 
 module.exports = database;

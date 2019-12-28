@@ -1,5 +1,6 @@
 $(document).ready(function(){
     $('.sidenav').sidenav();
+    $('select').formSelect();
   });
 var ajaxSetup = () => {
     console.log("Setting up ajax");

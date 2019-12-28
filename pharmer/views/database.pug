@@ -7,38 +7,58 @@ block content
             div(class="card")
                 div(class="card-content")
                     div(class="card-title") Import Gene Data
-                        form(encrypt="multipart/form-data" id="file-form")
-                            input(type="hidden" id="csrfToken" name="_csrf" value= csrfToken)
-                            div(class="input-field")
-                                input(class="validate" id="database_name" type="text" required)
-                                label(for="database_name") Database Name 
-                            div(class="file-field input-field")
-                                div(class="btn")
-                                    span File
-                                    input(type="file" name="gene_data_file" id="descriptions" required)
-                                div(class="file-path-wrapper")
-                                    input(class="file-path validate" type="text" placeholder="upload gene descriptions file")
-                                div(class="progress")
-                                    div(class="determinate" style="width: 0%")
-                                    
-                            div(class="file-field input-field")
-                                div(class="btn")
-                                    span File
-                                    input(type="file" name="gene_data_file" id="cell_values" required)
-                                div(class="file-path-wrapper")
-                                    input(class="file-path validate" type="text" placeholder="upload cell values file")
-                                div(class="progress")
-                                    div(class="determinate" style="width: 0%")
+                    form(encrypt="multipart/form-data" id="file-form")
+                        input(type="hidden" id="csrfToken" name="_csrf" value= csrfToken)
+                        div(class="input-field")
+                            input(class="validate" id="database_name" type="text" required)
+                            label(for="database_name") Database Name 
+                        div(class="file-field input-field")
+                            div(class="btn")
+                                span File
+                                input(type="file" name="gene_data_file" id="descriptions" required)
+                            div(class="file-path-wrapper")
+                                input(class="file-path validate" type="text" placeholder="upload gene descriptions file")
+                            div(class="progress")
+                                div(class="determinate" style="width: 0%")
+                                
+                        div(class="file-field input-field")
+                            div(class="btn")
+                                span File
+                                input(type="file" name="gene_data_file" id="cell_values" required)
+                            div(class="file-path-wrapper")
+                                input(class="file-path validate" type="text" placeholder="upload cell values file")
+                            div(class="progress")
+                                div(class="determinate" style="width: 0%")
 
-                            div(class="file-field input-field")
-                                div(class="btn")
-                                    span File
-                                    input(type="file" name="gene_data_file" id="go_terms" required)
-                                div(class="file-path-wrapper")
-                                    input(class="file-path validate" type="text" placeholder="upload go terms file")
-                                div(class="progress")
-                                    div(class="determinate" style="width: 0%")
+                        div(class="file-field input-field")
+                            div(class="btn")
+                                span File
+                                input(type="file" name="gene_data_file" id="go_terms" required)
+                            div(class="file-path-wrapper")
+                                input(class="file-path validate" type="text" placeholder="upload go terms file")
+                            div(class="progress")
+                                div(class="determinate" style="width: 0%")
 
                 div(class="card-action")
                     a(class="center" id="send-files" disabled) Send
+
+        div(class="col l9 m9 s12")
+            div(class="card")
+                div(class="card-content")
+                    div(class="card-title") Current Databases
+                    form(id="query-form")
+                        div(class="row")
+                            div(class="col l6 m6 s12")
+                                div(class="input-field")
+                                    select(id="database_select")
+                                        option(value="" disabled selected) Choose a database
+                            div(class="col l6 m6 s12")
+                                div(class="input-field")
+                                    select(id="fields_select")
+                                        option(value="" disabled selected) Choose a field for search
+                    div(class="input-field")
+                        input(id="search" type="search" required placeholder="search database for:")
+                        label(class="label-icon" for="search")
+                        i(class="material-icons") close
+        </div>
     script(type="text/javascript" src="/javascripts/database.js")

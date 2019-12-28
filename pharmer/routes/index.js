@@ -14,7 +14,7 @@ router.get('/database', function(req, res, next) {
 });
 
 router.post('/database', upload.array('gene_data_file', 3), function(req, res, next) {
-  var database = new Database('DRG');
+  var database = new Database('DRG', req.body['dbName']);
   var files = req.files;
   var descriptions, cell_values, go_terms;
   files.forEach((value, index) => {
@@ -27,44 +27,23 @@ router.post('/database', upload.array('gene_data_file', 3), function(req, res, n
       go_terms = value['path'];
     }
   });
-  // console.log(req.body['dbName'], descriptions, cell_values, go_terms);
-  database.createNewCollection(req.body['dbName'], descriptions, cell_values, go_terms);
+  database.createCollection(req.body['dbName'], descriptions, cell_values, go_terms);
   res.json({'status': 'received'});
 });
 
-router.get('/transcriptome/database/upload/geneDescriptions', (req, res, next) => {
-  var database = new Database();
-  database.connect();
-  res.render('geneDescriptionsUpload', {title: 'New Gene Descriptions data', csrfToken: req.csrfToken()});
+router.get('/database/list', function(req, res, next) {
+  var database = new Database('DRG');
+  database.getCollectionsList().then((result) => {
+    res.json(result)
+  }).catch((err) => {console.error(err);   res.json({'stauts': 'failed'});});
 });
 
-router.post('/transcriptome/database/upload/geneDescriptions', upload.array('geneDescriptions', 1), (req, res, next) => {
-  var database = new Database();
-  var file = req.files[0]["path"];
-  database.insertGenes('genes', file);
-  res.json({'status': 'received'});
-});
-
-router.get('/transcriptome/database/upload/cellValues', upload.array('cellValues', 1), (req, res, next) => {
-  res.render('cellValuesUpload', {title: 'Cell Values data', csrfToken: req.csrfToken()});
-})
-
-router.post('/transcriptome/database/upload/cellValues', upload.array('cellValues', 1), (req, res, next) => {
-  var database = new Database();
-  var file = req.files[0]['path'];
-  database.updateCellValues('genes', file);
-  res.json({'status': 'received'});
-});
-
-router.get('/transcriptome/database/upload/geneGoTerms', upload.array('geneGoTerms', 1), (req, res, next) => {
-  res.render('geneGoTermsUpload', {title: 'Gene GoTerms Data', csrfToken: req.csrfToken()});
-});
-
-router.post('/transcriptome/database/upload/geneGoTerms', upload.array('geneGoTerms', 1), (req, res, next) => {
-  var database = new Database();
-  var file = req.files[0]['path'];
-  database.updateGoTerms('genes', file);
-  res.json({'status': 'received'});
+router.post('/database/fields', upload.none(), function(req, res, next) {
+  var database = new Database('DRG');
+  database.getCollectionFields(req.body['database']).then((result) => {
+    console.log(result);
+    res.json(result);
+  }).catch((err) => {console.error(err); res.json({'status': 'failed'});});
 });
 
 module.exports = router;
