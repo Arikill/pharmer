@@ -9,7 +9,7 @@ files.change(() => {
 
 var sendFiles = () => {
     var formData = new FormData($("#file-upload-form").get(0));
-    var fileData = files[0].files;
+    var fileData = files,[0].files;
     console.log(fileData);
     formData.append("files", fileData);
     $.ajax({

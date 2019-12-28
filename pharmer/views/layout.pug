@@ -1,6 +1,12 @@
 doctype html
 html
   head
+    meta(charset="UTF-8")
+    meta(name="description" content="Base content for pharmer")
+    meta(keywords="HTML, CSS, XML, Javascript")
+    meta(name="author" content="Arikill")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
     title= title
     link(type="text/css" rel='stylesheet', href='/stylesheets/style.css')
     <!-- Compiled and minified CSS -->
@@ -10,6 +16,27 @@ html
           crossorigin="anonymous")
 
   body
+    nav(class="red accent-4")
+      div(class="nav-wrapper")
+        a(href="#!" class="brand-logo center")= title
+        a(href="#!" data-target="mobile" class="sidenav-trigger") M
+        ul(class="left hide-on-med-and-down")
+          li
+            a(href="#!")= user
+        ul(class="right hide-on-med-and-down")
+          li
+            a(href="#!") analysis
+          li
+            a(href="#!") database
+          li
+            a(href="#!") logout
+    ul(class="sidenav" id="mobile")
+      li
+        a(href="#!") analysis
+      li
+        a(href="#!") database
+      li
+        a(href="#!") logout
     block content
   
   footer

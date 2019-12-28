@@ -1,3 +1,6 @@
+$(document).ready(function(){
+    $('.sidenav').sidenav();
+  });
 var ajaxSetup = () => {
     console.log("Setting up ajax");
     $.ajaxSetup({

@@ -6,7 +6,30 @@ var Database = require('../db/database');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('base', { title: 'Express' });
+  res.render('index', { title: 'Pharmer', user: 'User' });
+});
+
+router.get('/database', function(req, res, next) {
+  res.render('database', { title: 'Pharmer-Database', user: 'User', csrfToken: req.csrfToken()});
+});
+
+router.post('/database', upload.array('gene_data_file', 3), function(req, res, next) {
+  var database = new Database('DRG');
+  var files = req.files;
+  var descriptions, cell_values, go_terms;
+  files.forEach((value, index) => {
+    console.log(value['path']);
+    if (value['originalname'] === "gene_descriptions.csv") {
+      descriptions = value['path'];
+    } else if (value['originalname'] === "gene_cell_csv.csv") {
+      cell_values = value['path'];
+    } else if (value['originalname'] === "go_terms.csv") {
+      go_terms = value['path'];
+    }
+  });
+  // console.log(req.body['dbName'], descriptions, cell_values, go_terms);
+  database.createNewCollection(req.body['dbName'], descriptions, cell_values, go_terms);
+  res.json({'status': 'received'});
 });
 
 router.get('/transcriptome/database/upload/geneDescriptions', (req, res, next) => {
