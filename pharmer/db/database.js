@@ -104,6 +104,9 @@ database.prototype.updateCellValues = function (client, collection_name, file) {
             .on('data', (row) => {
                 var id = row['Gene.stable.ID'];
                 delete row['Gene.stable.ID'];
+                Object.keys(row).forEach(function(key) {
+                    row[key] = parseFloat(row[key]);
+                });
                 console.log('Updating cell values: ', id);
                 collection.findOneAndUpdate({ '_id': id }, { $set: row }, {
                     returnOriginal: true
@@ -155,6 +158,28 @@ database.prototype.createCollection = function (collection_name, descriptions_fi
         }).catch(()=>{console.log("Could not insert genes. Client closed!")})
     });
     return promise;
+}
+
+database.prototype.createGeneCollection = function(collection_name, description_file, go_terms_file) {
+    var promise = new Promise((resolve, reject) => {
+        this.insertGenes(collection_name, description_file).then((client) => {
+            this.updateGoTerms(client, collection_name, go_terms_file).then((client) => {
+                resolve(client.close());
+            }).catach(() => {console.log("Could not update go terms. Client closed!");})
+        }).catch(()=>{console.log("Could not insert genes. Client closed!")})
+    });
+    return promise;
+}
+
+database.prototype.createCellCollection = function(collection_name, cell_values_file) {
+    var promise = new Promise((resolve, reject) => {
+        fs.createReadStream(cell_values_file).pipe(csv())
+            .on('data', (row) => {
+
+            }).on('end', ()=>{
+
+            });
+    })
 }
 
 module.exports = database;

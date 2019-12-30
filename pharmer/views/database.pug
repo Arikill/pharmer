@@ -3,7 +3,7 @@ extends layout
 block content
     link(type='text/css' rel='stylesheet' href='/stylesheets/database.css')
     div(class="row")
-        div(class="col l3 m3 s12")
+        div(class="col l6 m6 s12")
             div(class="card")
                 div(class="card-content")
                     div(class="card-title") Import Gene Data
@@ -20,15 +20,6 @@ block content
                                 input(class="file-path validate" type="text" placeholder="upload gene descriptions file")
                             div(class="progress")
                                 div(class="determinate" style="width: 0%")
-                                
-                        div(class="file-field input-field")
-                            div(class="btn")
-                                span File
-                                input(type="file" name="gene_data_file" id="cell_values" required)
-                            div(class="file-path-wrapper")
-                                input(class="file-path validate" type="text" placeholder="upload cell values file")
-                            div(class="progress")
-                                div(class="determinate" style="width: 0%")
 
                         div(class="file-field input-field")
                             div(class="btn")
@@ -42,17 +33,26 @@ block content
                 div(class="card-action")
                     a(class="center" id="send-files" disabled) Send
 
-        div(class="col l9 m9 s12")
+        div(class="col l6 m6 s12")
             div(class="card")
                 div(class="card-content")
-                    div(class="card-title") Current Databases
+                    div(class="card-title row")
+                        div(class="col l10 m10 s10") Database search
+                        div(class="col l2 m2 s2")
+                            a(class="waves-effect waves-light btn" id="add-search") add
                     form(id="query-form")
                         div(class="row")
-                            div(class="col l6 m6 s12")
+                            div(class="col l4 m4 s12")
                                 div(class="input-field")
                                     select(id="database_select")
                                         option(value="" disabled selected) Choose a database
-                            div(class="col l6 m6 s12")
+                            div(class="col l4 m4 s12")
+                                div(class="input-field")
+                                    select(id="classification_paradigm" disabled)
+                                        option(value="" disabled selected) choose paradigm
+                                        option(value="genes") genes
+                                        option(value="cells") cells
+                            div(class="col l4 m4 s12")
                                 div(class="input-field")
                                     select(id="fields_select")
                                         option(value="" disabled selected) Choose a field for search
@@ -60,5 +60,13 @@ block content
                         input(id="search" type="search" required placeholder="search database for:")
                         label(class="label-icon" for="search")
                         i(class="material-icons") close
-        </div>
+
+        div(class="col l6 m6 s12")
+            div(class="card")
+                div(class="card-content")
+                    div(class="card-title row")
+                        div(class="col l10 m10 s10") Import transcription data
+                        div(class="col l2 m2 s2")
+                            a(class="waves-effect waves-light btn" id="add-cell-data") add
+                    form(id="cell-values-form")
     script(type="text/javascript" src="/javascripts/database.js")
