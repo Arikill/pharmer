@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Login</h1>
+<form id="login-form" enctype="multipart/form-data" method="POST" action="/login">
+    <input type="hidden" name="csrf_token" id="csrf-token" value="{{csrf_token()}}" />
+    Email: <input class="input" type="email" name="email" id="email" required/><br>
+    Password: <input class="input" type="password" name="password" id="password" required/><br>
+    <input type="submit" id="submit" value="submit"/><br>
+</form>
+<script type="text/javascript" src="../static/javascripts/login.js"></script>
+{% endblock %}

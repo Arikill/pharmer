@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Register User</h1>
+<form id="registration-form" enctype="multipart/form-data" method="POST" action="/register">
+    <input type="hidden" name="csrf_token" id="csrf-token" value="{{csrf_token()}}" />
+    First Name: <input class="input" type="text" name="firstname" id="firstname" required/><br>
+    Last Name: <input class="input" type="text" name="lastname" id="lastname" required/><br>
+    Email: <input class="input" type="email" name="email" id="email" required/><br>
+    Password: <input class="input" type="password" name="password" id="password" required/><br>
+    Confirm Password: <input class="input" type="password" id="confirm-password" required/><br>
+    <input type="submit" id="submit" value="submit"/><br>
+</form>
+<p id="message"></p>
+<script type="text/javascript" src="../static/javascripts/register.js"></script>
+
+{% endblock %}
